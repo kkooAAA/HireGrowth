@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@theme {
+  --color-th-blue: #003087;
+  --color-th-red: #A51931;
+  --color-th-white: #FFFFFF;
+  
+  --color-dee-primary: #003087;
+  --color-dee-secondary: #A51931;
+  --color-dee-accent: #003087;
+
+  --background-image-gradient-radial: radial-gradient(var(--tw-gradient-stops));
+  --background-image-gradient-conic: conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops));
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 100% 26.5%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 349 73% 37%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 100% 26.5%;
+    --radius: 0.75rem;
+  }
+}
+
+body {
+  background-color: #F8FAFC;
+  color: #0f172a; /* Slate 900 equivalent */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer components {
+  .glass-card {
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .thai-gradient {
+    background: linear-gradient(135deg, #003087 0%, #001a4d 100%);
+  }
+
+  .dee-button {
+    position: relative;
+    overflow: hidden;
+    padding: 0.625rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    transition: all 0.3s;
+  }
+  
+  .dee-button:hover {
+    transform: scale(1.02);
+  }
+  
+  .dee-button:active {
+    transform: scale(0.98);
+  }
+}
