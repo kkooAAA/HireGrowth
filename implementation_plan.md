@@ -1,156 +1,111 @@
-# AI Ads Analytics Dashboard — Implementation Plan
+# dee insights — Implementation Plan & Architecture Blueprint
 
 ## Overview
 
-Production-ready internal AI-powered advertising analytics dashboard.
-Built with **Next.js 14 (App Router)**, **TypeScript**, **Tailwind CSS**, **shadcn/ui**, **Recharts**, **NextAuth.js**, and **Supabase (PostgreSQL)**.
+A production-ready internal AI-powered advertising analytics dashboard. This document serves as both a roadmap for initial development and a reusable blueprint for scaling the "dee" ecosystem.
 
-Thailand flag color palette: Deep Blue (`#003087`), White, Red (`#A51931`), and neutral grays.
-
-Branding: "dee" appears throughout as a sub-brand label (e.g. "dee insights", "dee analysis").
+**Branding:** "dee" (sub-brand label for insights, analysis, and automation).
+**Visual Identity:** Thailand flag color palette (Deep Blue `#003087`, White `#FFFFFF`, Red `#A51931`).
 
 ---
 
-## Tech Stack
+## Tech Stack (The Blueprint)
 
-| Layer | Technology |
-|---|---|
-| Frontend | Next.js 14, React, TypeScript, Tailwind CSS |
-| UI Components | shadcn/ui |
-| Charts | Recharts |
-| Auth | NextAuth.js (Google OAuth + Email/Password) |
-| Database | Supabase (PostgreSQL) |
-| API Data | DummyJSON + synthetic ad-style transformation |
-| Deployment | Vercel-ready |
+| Layer | Technology | Rationale |
+|---|---|---|
+| **Frontend** | Next.js 14 (App Router), TypeScript | Industry standard for SEO, performance, and type safety. |
+| **Styling** | Tailwind CSS 4.0 | Utility-first styling with high performance and flexibility. |
+| **Animations** | Framer Motion | High-fidelity, smooth interactive transitions. |
+| **UI Components** | shadcn/ui + Lucide React | Modern, accessible, and customizable primitives. |
+| **Charts** | Recharts | Composable and responsive data visualization. |
+| **Auth** | NextAuth.js | Flexible authentication (Google OAuth + Credentials). |
+| **Database** | Supabase (PostgreSQL) | Scalable real-time database and auth backend. |
+| **Data Fetching** | Server-side API Routes | Centralized data logic, security, and caching. |
 
 ---
 
-## Project Structure
+## Core Project Structure
 
 ```
-/home/konony/Antigravity/HireGrowth/
+/HireGrowth/
 ├── app/
-│   ├── (auth)/
-│   │   └── login/page.tsx
-│   ├── (dashboard)/
-│   │   ├── layout.tsx             # Sidebar + header shell
-│   │   ├── dashboard/page.tsx     # Main overview
-│   │   ├── analytics/page.tsx
-│   │   ├── insights/page.tsx
-│   │   ├── reports/page.tsx
-│   │   ├── team/page.tsx
-│   │   └── settings/page.tsx
-│   ├── api/
-│   │   ├── auth/[...nextauth]/route.ts
+│   ├── (auth)/                    # Auth flow (Login, Register)
+│   ├── (dashboard)/               # Protected dashboard routes
+│   │   ├── layout.tsx             # Sidebar + Header shell
+│   │   ├── dashboard/page.tsx     # Overview intelligence
+│   │   ├── analytics/page.tsx     # Deep-dive metrics
+│   │   ├── insights/page.tsx      # AI recommendations
+│   │   ├── reports/page.tsx       # Campaign audit logs
+│   │   ├── team/page.tsx          # User management
+│   │   └── settings/page.tsx      # System config
+│   ├── api/                       # Server-side data layer
+│   │   ├── auth/[...nextauth]/
 │   │   ├── analytics/route.ts
-│   │   ├── campaigns/route.ts
-│   │   ├── insights/route.ts
-│   │   └── alerts/route.ts
-│   ├── globals.css
-│   └── layout.tsx
+│   │   └── campaigns/route.ts
+│   ├── globals.css                # Thailand palette & glassmorphism
+│   └── page.tsx                   # High-fidelity landing page
 ├── components/
-│   ├── ui/                        # shadcn/ui primitives
-│   ├── auth/
-│   │   └── LoginForm.tsx
-│   ├── dashboard/
-│   │   ├── Sidebar.tsx
-│   │   ├── Header.tsx
-│   │   ├── KPICard.tsx
-│   │   ├── AlertBanner.tsx
-│   │   ├── AISummaryCard.tsx
-│   │   └── PerformanceSummary.tsx
-│   ├── charts/
-│   │   ├── SpendConversionChart.tsx
-│   │   ├── ROASChart.tsx
-│   │   ├── DeviceChart.tsx
-│   │   └── DailyPerformanceChart.tsx
-│   ├── campaigns/
-│   │   └── CampaignTable.tsx
-│   └── shared/
-│       ├── LoadingSkeleton.tsx
-│       └── ToastProvider.tsx
+│   ├── charts/                    # Spend, ROAS, Conversion charts
+│   ├── dashboard/                 # KPI Cards, Sidebar, Header
+│   └── shared/                    # Providers, UI primitives
 ├── lib/
-│   ├── supabase/
-│   │   ├── client.ts
-│   │   └── server.ts
-│   ├── auth/
-│   │   └── options.ts
-│   ├── analytics/
-│   │   ├── fetchAdData.ts         # DummyJSON → ad data transformation
-│   │   └── metrics.ts
-│   └── insights/
-│       └── generateInsights.ts    # Rule-based AI insight engine
-├── types/
-│   ├── analytics.ts
-│   ├── campaign.ts
-│   └── auth.ts
-├── middleware.ts                  # Route protection
-├── .env.local.example
-├── tailwind.config.ts
-└── next.config.ts
+│   ├── analytics/                 # Data transformation logic
+│   ├── auth/                      # NextAuth configuration
+│   ├── insights/                  # AI insight engines
+│   └── supabase/                  # Supabase client/server logic
+└── types/                         # Shared TypeScript interfaces
 ```
 
 ---
 
-## Proposed Changes
+## Implementation Roadmap
 
-### Phase 1 — Project Bootstrap
-- Initialize Next.js 14 with TypeScript + Tailwind CSS + App Router
-- Install shadcn/ui, Recharts, NextAuth, Supabase client
-- Configure Tailwind with Thailand flag color tokens
+### Phase 1: Foundation (Completed)
+- [x] Initialize Next.js 14 with TypeScript & Tailwind CSS 4.0.
+- [x] Configure "Thailand Flag" color tokens and glassmorphism in `globals.css`.
+- [x] Setup NextAuth.js with Middleware route protection.
+- [x] Integrate Supabase client for future persistence.
 
-### Phase 2 — Auth System
-- **[NEW]** `app/(auth)/login/page.tsx` — Beautiful login page
-- **[NEW]** `app/api/auth/[...nextauth]/route.ts` — NextAuth handler
-- **[NEW]** `lib/auth/options.ts` — Google OAuth + credentials provider
-- **[NEW]** `middleware.ts` — Protect all `/dashboard/*` routes
+### Phase 2: Design System & Shell (Completed)
+- [x] **Landing Page:** High-fidelity hero with motion animations.
+- [x] **Login Page:** Premium auth UI with "dee" branding.
+- [x] **Dashboard Layout:** Sidebar with enterprise usage tracking and active route detection.
+- [x] **Header:** Profile management, notifications, and global search.
 
-### Phase 3 — Database Schema (Supabase)
-Tables: `users`, `roles`, `sessions`, `campaigns`, `analytics_cache`, `ai_summaries`, `alerts`, `activity_logs`
-- **[NEW]** `lib/supabase/schema.sql` — Full schema
+### Phase 3: Data Layer & APIs (Completed)
+- [x] **Analytics API:** Daily metrics transformation engine.
+- [x] **Campaigns API:** Product-to-ad conversion logic (DummyJSON integration).
+- [x] **Types:** Defined `Campaign`, `DailyMetric`, and `Insight` interfaces.
 
-### Phase 4 — Data Layer (Public API Integration)
-- **[NEW]** `lib/analytics/fetchAdData.ts` — Fetch from DummyJSON, transform to ad metrics
-- **[NEW]** `lib/insights/generateInsights.ts` — Rule-based AI insight engine
-- **[NEW]** `app/api/analytics/route.ts`, `app/api/campaigns/route.ts`, `app/api/insights/route.ts`, `app/api/alerts/route.ts`
+### Phase 4: Core Modules (Completed)
+- [x] **Overview Dashboard:** Dynamic KPI cards and core intelligence grid.
+- [x] **Advanced Analytics:** Interactive Area and Bar charts for performance tracking.
+- [x] **AI Insights:** "dee Insights" panel with growth forecasting and strategic tips.
+- [x] **Campaign Reports:** Full-featured audit table with search and filtering.
+- [x] **Team Management:** Enterprise user management UI with role-based badges.
+- [x] **Settings:** Categorized system configuration and support panels.
 
-### Phase 5 — Dashboard UI
-- **[NEW]** `app/(dashboard)/layout.tsx` — Sidebar + header shell with dark mode
-- **[NEW]** `components/dashboard/Sidebar.tsx`
-- **[NEW]** `components/dashboard/Header.tsx`
-- **[NEW]** `components/dashboard/KPICard.tsx` — 9 KPI metrics with trends
-- **[NEW]** `components/dashboard/AlertBanner.tsx` — Smart alert system
-- **[NEW]** `components/dashboard/AISummaryCard.tsx` — "dee insights" panel
-- **[NEW]** `app/(dashboard)/dashboard/page.tsx`
+### Phase 5: Persistence & Optimization (Next Steps)
+- [ ] Migrate from synthetic DummyJSON to real Supabase PostgreSQL tables.
+- [ ] Implement CRUD for Campaigns (Create/Edit flow).
+- [ ] Integrate real LLM (OpenAI/Claude) for dynamic AI Insights.
+- [ ] Add "Export to PDF/Excel" functionality for Reports.
 
-### Phase 6 — Charts & Analytics Page
-- **[NEW]** `components/charts/SpendConversionChart.tsx`
-- **[NEW]** `components/charts/ROASChart.tsx`
-- **[NEW]** `components/charts/DeviceChart.tsx`
-- **[NEW]** `components/charts/DailyPerformanceChart.tsx`
-- **[NEW]** `app/(dashboard)/analytics/page.tsx`
+---
 
-### Phase 7 — Campaigns Table
-- **[NEW]** `components/campaigns/CampaignTable.tsx` — Full sortable/filterable table
-- **[NEW]** `app/(dashboard)/reports/page.tsx`
+## Design Principles (Reusable Guidelines)
 
-### Phase 8 — AI Insights, Team, Settings Pages
-- **[NEW]** `app/(dashboard)/insights/page.tsx`
-- **[NEW]** `app/(dashboard)/team/page.tsx` — User management (Admin only)
-- **[NEW]** `app/(dashboard)/settings/page.tsx`
+1.  **Typography:** Use high-contrast font weights (Black/Extrabold) for headers and bold italics for branding.
+2.  **Radius:** Consistent `2.5rem` (40px) for cards and `1.5rem` (24px) for interactive elements.
+3.  **Elevation:** Use large, soft shadows (`shadow-2xl shadow-slate-200/50`) instead of hard borders.
+4.  **Micro-interactions:** Every button and card should have a scale effect (`hover:scale-[1.02]`) and motion entry.
+5.  **Branding:** Always prefix intelligence features with "dee" (e.g., *dee Analysis*, *dee Forecast*).
 
 ---
 
 ## Verification Plan
 
-### Automated
-- `npm run build` — must pass with 0 TypeScript errors
-- `npm run dev` — must start on localhost:3000
-
-### Manual (Browser Agent)
-- Verify login page renders
-- Verify dashboard KPI cards load with data
-- Verify charts render
-- Verify campaign table with search/sort
-- Verify AI insights panel
-- Verify mobile responsive layout
+- [x] `npm run build` — Passes with zero TS errors.
+- [x] Route Protection — Middleware redirects unauthenticated users to `/login`.
+- [x] Mobile Responsiveness — Sidebar collapses and grid adapts to screen size.
+- [x] Data Integrity — API routes return consistent, typed JSON objects.
