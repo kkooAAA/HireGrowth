@@ -11,13 +11,16 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "admin@dee.com" },
+        email: { label: "Email", type: "email", placeholder: "[EMAIL_ADDRESS]" },
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
         // Mock authentication for development
-        if (credentials?.email === "admin@dee.com" && credentials?.password === "password") {
-          return { id: "1", name: "Dee Admin", email: "admin@dee.com" };
+        if (
+          credentials?.email === process.env.ADMIN_EMAIL &&
+          credentials?.password === process.env.ADMIN_PASSWORD
+        ) {
+          return { id: "1", name: "Dee Admin", email: process.env.ADMIN_EMAIL };
         }
         return null;
       }
