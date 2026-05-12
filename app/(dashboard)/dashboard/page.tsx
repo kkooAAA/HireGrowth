@@ -21,52 +21,59 @@ import { clsx } from "clsx";
 
 import { toast } from "sonner";
 
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 export default function DashboardPage() {
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [dailyMetrics, setDailyMetrics] = useState<DailyMetric[]>([]);
-  const [insights, setInsights] = useState<Insight[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: campaigns, error: cError, isLoading: cLoading } = useSWR<Campaign[]>("/api/campaigns", fetcher);
+  const { data: dailyMetrics, error: dError, isLoading: dLoading } = useSWR<DailyMetric[]>("/api/analytics", fetcher);
+  
   const [timeRange, setTimeRange] = useState<"daily" | "weekly" | "monthly">("weekly");
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const [cRes, dRes] = await Promise.all([
-          fetch("/api/campaigns"),
-          fetch("/api/analytics")
-        ]);
-        
-        const c = await cRes.json();
-        const d = await dRes.json();
-        
-        setCampaigns(c);
-        setDailyMetrics(d);
-        setInsights(generateInsights(c));
-      } catch (error) {
-        console.error("Error loading dashboard data:", error);
-        toast.error("Failed to sync with intelligence engine");
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadData();
-  }, []);
+  const insights = useMemo(() => {
+    return campaigns ? generateInsights(campaigns) : [];
+  }, [campaigns]);
 
   // Filter metrics based on timeRange
   const filteredMetrics = useMemo(() => {
+    if (!dailyMetrics) return [];
     if (timeRange === "daily") return dailyMetrics.slice(-7);
     if (timeRange === "weekly") return dailyMetrics.slice(-14);
     return dailyMetrics;
   }, [dailyMetrics, timeRange]);
 
-  if (loading) {
-    // ... (rest of loading remains same)
+  const stats = useMemo(() => {
+    if (!campaigns || campaigns.length === 0) return { spend: 0, conversions: 0, roas: 0, clicks: 0 };
+    
+    const spend = campaigns.reduce((acc, c) => acc + c.spend, 0);
+    const conversions = campaigns.reduce((acc, c) => acc + c.conversions, 0);
+    const roas = campaigns.reduce((acc, c) => acc + c.roas, 0) / campaigns.length;
+    const clicks = campaigns.reduce((acc, c) => acc + c.clicks, 0);
+    
+    return { spend, conversions, roas, clicks };
+  }, [campaigns]);
+
+  if (cLoading || dLoading) {
+    return (
+      <div className="space-y-8 animate-pulse p-4">
+        <div className="h-12 w-64 bg-slate-200 rounded-2xl mb-12" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-44 bg-slate-100 rounded-[2rem]"></div>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 h-[500px] bg-slate-100 rounded-[2.5rem]"></div>
+          <div className="h-[500px] bg-slate-100 rounded-[2.5rem]"></div>
+        </div>
+      </div>
+    );
   }
 
-  const totalSpend = campaigns.reduce((acc, c) => acc + c.spend, 0);
-  const totalConversions = campaigns.reduce((acc, c) => acc + c.conversions, 0);
-  const avgRoas = campaigns.reduce((acc, c) => acc + c.roas, 0) / campaigns.length;
-  const totalClicks = campaigns.reduce((acc, c) => acc + c.clicks, 0);
+  if (cError || dError) {
+    toast.error("Failed to sync with intelligence engine");
+  }
 
   const handleCreateCampaign = () => {
     toast.info("Opening Campaign Architect...", {
@@ -136,7 +143,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <KPICard 
           title="Total Ad Spend" 
-          value={totalSpend.toLocaleString()} 
+          value={stats.spend.toLocaleString()} 
           trend={12.5} 
           icon={DollarSign} 
           prefix="$" 
@@ -144,14 +151,14 @@ export default function DashboardPage() {
         />
         <KPICard 
           title="Conversions" 
-          value={totalConversions.toLocaleString()} 
+          value={stats.conversions.toLocaleString()} 
           trend={8.2} 
           icon={Target} 
           delay={0.2}
         />
         <KPICard 
           title="Return on Ad Spend" 
-          value={avgRoas.toFixed(2)} 
+          value={stats.roas.toFixed(2)} 
           trend={-2.4} 
           icon={TrendingUp} 
           suffix="x" 
@@ -159,7 +166,7 @@ export default function DashboardPage() {
         />
         <KPICard 
           title="Total Engagement" 
-          value={totalClicks.toLocaleString()} 
+          value={stats.clicks.toLocaleString()} 
           trend={15.1} 
           icon={MousePointer2} 
           delay={0.4}
@@ -217,7 +224,7 @@ export default function DashboardPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {campaigns.slice(0, 5).map((campaign) => (
+              {campaigns?.slice(0, 5).map((campaign) => (
                 <tr 
                   key={campaign.id} 
                   onClick={() => toast.info(`Viewing ${campaign.name}`)}

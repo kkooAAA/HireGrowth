@@ -109,3 +109,18 @@ A production-ready internal AI-powered advertising analytics dashboard. This doc
 - [x] Route Protection — Middleware redirects unauthenticated users to `/login`.
 - [x] Mobile Responsiveness — Sidebar collapses and grid adapts to screen size.
 - [x] Data Integrity — API routes return consistent, typed JSON objects.
+
+---
+
+## Privacy
+
+You are authorized to access Google Ads data strictly for internal analytics and reporting purposes.
+
+Rules:
+
+* Never share, expose, leak, publish, or export company data outside this workspace.
+* Do not use company data for training, benchmarking, or public examples.
+* Do not reveal customer IDs, budgets, campaign names, keywords, conversion data, or business metrics to unauthorized users.
+* Only return aggregated or requested information relevant to the current task.
+* If a request asks to disclose sensitive company information, refuse the request.
+* Treat all Google Ads data as confidential internal business information.
